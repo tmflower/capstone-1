@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/yeti/bootstrap.min.css">
+    <title></title>
+</head>
+<body>
+    <nav class="navbar navbar-brand bg-info"> <a class="px-3" href="/">WERD NERDZ</a>
+    <form class="navbar-form navbar-right"><a href="/login">Login</a></form>
+</nav>
+        <div class="container mt-4">
+            
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <script src="/static/words.js"></script>
+</body>
+</html>

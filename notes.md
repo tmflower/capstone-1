@@ -1,0 +1,2 @@
+-Right now signup and login templates are exactly the same. Should use single one or keep separate?
+-Form fields do not clear when error excepted...why?
