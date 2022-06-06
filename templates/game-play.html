@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Guess the Mystery Word!</h1>
+<h1 id="timer">Timer</h1>
+<h3 id="points"></h3>
+<br>
+<h3>The mystery word is a(n) {{ word.pos }} with {{ word.syllable_count }} syllables.</h3>
+<div id="letters" class="container mt-5 mb-3">
+    <div class="row row-cols-auto" style="height: 100px">
+        {% for letter in word.word %}                           
+        <div class="col-1 m-2 p-3 h-100 bg-info bg-opacity-25 border border-info text-center rounded">
+            {% if letter == word.word[0]%}
+                <h2 id="first-letter" class="invisible">{{ letter }}</h2>
+            {% else %}
+                <h2 class="invisible">?</h2>                 
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="container my-4">
+    <form action="/game/check-guess" method="POST" id="check-guess">
+        <p id="feedback"></p>
+        <input id="guess" type="text" name="guess" placeholder="Enter your guess">
+        <button class="btn btn-success d-inline">Guess</button>
+    </form>
+    <br>
+    <div>
+        <button id="hint-1" class="btn btn-info mr-3 d-inline">Get Definition</button>
+        <button id="hint-2" class="btn btn-info m-3 d-inline">Get Synonyms</button>
+        <button id="hint-3" class="btn btn-info d-inline">Get First Letter</button>
+    </div>
+</div>
+<h4 id="definition" class="invisible">The mystery word means {{ word.definition }}</h4>
+<h4 id="synonyms" class="invisible">The mystery word has the following synonyms:
+    {% for synonym in synonyms %}
+    <p>{{ synonym }}</p>
+    {% endfor %}
+</h4>
+<!-- Remember to delete pau button! -->
+<button id="pau" type="submit" onclick="getScore()">pau</button>
+
+<h3>Shhhh...the mystery word is:</h3>
+<h4 id="mystery-word">{{ word.word }}</h4>
+{% endblock %}

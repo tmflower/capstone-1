@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, flash, session
+from flask import Flask, render_template, redirect, flash, session, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from psycopg2 import IntegrityError
-from models import db, connect_db, User
+from models import db, connect_db, User, Word
 from secret import KEY
 from forms import NewUserForm, UserLoginForm
 from sqlalchemy.exc import IntegrityError
+import requests, json
 
 app = Flask(__name__)
 
@@ -19,7 +20,6 @@ connect_db(app)
 
 # db.drop_all()
 # db.create_all()
-
 
 BASE_URL = "https://wordsapiv1.p.rapidapi.com/words/"
 
@@ -36,7 +36,7 @@ def home_page():
 
 @app.route('/signup', methods=["GET", "POST"])
 def user_signup():
-    """Allows a new user to sign up for a free account."""
+    """Allows a new user to sign up for a free account when a unique username and valid password is submitted."""
     form = NewUserForm()
     if form.validate_on_submit():
         try:
@@ -50,7 +50,7 @@ def user_signup():
             session["user_id"] = user.id
 
             flash(f"You have created an account, {username}!", "success")
-            return redirect('/game')
+            return redirect('/game/info')
 
         except IntegrityError:
             flash("Sorry, that username is already taken. Please try another one.", "warning")
@@ -72,12 +72,13 @@ def user_login():
         if user:
             session["user_id"] = user.id
             flash(f"You are logged in, {username}!", "success")
-            return redirect('/game')
+            return redirect('/game/info')
 
         else:
             flash("Username or password not valid. Please try again.", "danger")
 
     return render_template('login.html', form=form)
+
 
 @app.route('/logout')
 def user_logout():
@@ -86,7 +87,66 @@ def user_logout():
     return redirect('/')
 
 
-@app.route('/game')
+@app.route('/game/info')
 def game_overview():
     """Displays instructions/rules for game and start button."""
-    return render_template('game.html')
+    return render_template('game-info.html')
+
+
+@app.route('/game/play')
+def game_play():
+    """Initiates game by getting a random word from Words API with the given parameters"""
+
+    querystring = {"lettersmin":"6","lettersMax":"10","syllablesMin":"2","syllablesMax":"6","frequencymin":"2.00","frequencymax":"5.00","hasDetails":"definitions", "hasDetails":"synonyms", "random":"true"}
+    
+    response = requests.request("GET", BASE_URL, headers=HEADERS, params=querystring)
+    data = response.json()
+    print(data)
+
+    mystery_word = Word(
+    word = data['word'], 
+    pos = data['results'][0]['partOfSpeech'], 
+    syllable_count = data['syllables']['count'], 
+    definition = data['results'][0]['definition'],
+    synonyms = data['results'][0]['synonyms']
+    )
+
+    db.session.add(mystery_word)
+    db.session.commit()
+
+    synonyms = data['results'][0]['synonyms']
+
+    session['word'] = mystery_word.word
+
+    return render_template('/game-play.html', word=mystery_word, synonyms=synonyms)
+
+
+@app.route('/game/check-guess', methods=["GET","POST"])
+def check_guess():
+    """Checks if user has guessed the word and provide feedback accordingly"""
+    guess = request.args['guess']
+    return jsonify(guess)
+
+
+@app.route('/game/get-score', methods=["POST"])
+def get_score():
+    """Get final score when game ends"""    
+    output = request.get_json()
+    print(f"**************************************{output}")
+    result = json.loads(output)
+    print(f"#######################################{result}")
+    score = result['score']
+    session['score'] = score
+    print(f"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@{score}")
+    print(f"Session score is ${session['score']}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    return result
+
+
+@app.route('/game/finish')
+def show_stats():
+    """Displays feedback and game stats when user guesses word correctly or time runs out."""
+    word = session['word']
+    print(f"WORD is {word}******************************************")
+    score = session['score']
+    print(f"SCORE is {score}********************************")
+    return render_template('game-finish.html', score=score, word=word)

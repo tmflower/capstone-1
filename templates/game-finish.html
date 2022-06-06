@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- if player in session, show response below; else show a loser response...with option to get word info -->
+<h1>YOU WIN!!!</h1>
+<h2>Congratulations! You guessed the word {{ word }}! <br> Your score for this round is {{ score }}.</h2>
+<form action='/game/play'>
+    <button id="replay" class="btn btn-success">Play again!</button>
+</form>
+{% endblock %}
