@@ -54,6 +54,8 @@ def user_signup():
 
         except IntegrityError:
             flash("Sorry, that username is already taken. Please try another one.", "warning")
+            form.username.data = ""
+            form.password.data = ""
         
     return render_template('signup.html', form=form)
 
@@ -117,8 +119,9 @@ def game_play():
     synonyms = data['results'][0]['synonyms']
 
     session['word'] = mystery_word.word
+    score = session['score']
 
-    return render_template('/game-play.html', word=mystery_word, synonyms=synonyms)
+    return render_template('/game-play.html', word=mystery_word, synonyms=synonyms, score=score)
 
 
 @app.route('/game/check-guess', methods=["GET","POST"])

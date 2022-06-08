@@ -1,5 +1,3 @@
-from types import ClassMethodDescriptorType
-from xml.sax.handler import DTDHandler
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 

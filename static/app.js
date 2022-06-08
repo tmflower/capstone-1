@@ -1,37 +1,62 @@
 let points;
+let timer;
 
-function startGame() {    
+function startGame() {   
     points = 100;
-    $('#points').text(`Your points: ${points}`)         
-    let counter = 10; 
-    const timer = setInterval(function(){              
+    $('#points').text(`Your remaining points: ${points}`);         
+    let counter = 30;
+    $('#game-over').addClass('invisible');
+    $('#word-info').removeClass('invisible');
+    $('#letters').removeClass('invisible');
+    $('#play-btn').addClass('invisible');
+    $('#replay').removeClass('invisible');
+    console.log("inside start game")
+    timer = setInterval(function(){              
         console.log(counter);
         $('#timer').text(`${counter}`);
         counter--;
         if (counter === 0) {
             clearInterval(timer);
             console.log('timer has stopped!')
-            score = 0;
+            points = 0;
+            $('#points').text(`Your remaining points: 0`);
             getScore();
-            location.replace('/game/finish');
+            endGame();
         }
     }, 1000);
 }
 
-// const playBtn = $('#play-btn');
-// playBtn.on('click', startGame());
-// $('#replay').on('click', startGame());
+const playBtn = $('#play-btn');
+playBtn.on('click', startGame);
 
+function endGame() {
+    $('#word-info').addClass('invisible');
+    $('#letters').addClass('invisible');
+    $('#game-over').removeClass('invisible');
+    $('#replay').removeClass('invisible');
+}
 
-const $guessForm = $('#check-guess')
-const $guess = $('#guess')
+$('#results').on('click', getResults);
+
+function getResults() {
+    location.replace('/game/finish')
+}
+
+$('#replay').on('click', playAgain);
+
+function playAgain() {
+    location.replace('/game/play');
+}
+
+const $guessForm = $('#check-guess');
+const $guess = $('#guess');
 
 $guessForm.on('submit', checkGuess);
 
 async function checkGuess(evt) {
     evt.preventDefault();
     let guess = $guess.val();
-    console.log(guess)
+    console.log(guess);
 
     const resp = await axios.get(`/game/check-guess`, { params: { guess: guess } });
     console.log(resp)
@@ -41,9 +66,12 @@ async function checkGuess(evt) {
     let mysteryWord = $('#mystery-word').text()
 
     if (guess === mysteryWord) {
+        clearInterval(timer);
         $('#feedback').text("You guessed it!");
+        console.log(points);
         getScore();
-        location.assign('/game/finish')
+        endGame();
+        // location.assign('/game/finish')
     }
 
     else {
@@ -61,19 +89,19 @@ function showHint1() {
     if (points === 100) {
         $definition.removeClass('invisible');
         points -= 50;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint1.prop('disabled', true);
     }
     else if (points === 50) {
         $definition.removeClass('invisible');
         points -= 25;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint1.prop('disabled', true);
     }
     else if (points === 25) {
         $definition.removeClass('invisible');
         points -= 15
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint1.prop('disabled', true);
     }
 }
@@ -86,19 +114,19 @@ function showHint2() {
     if (points === 100) {
         $synonyms.removeClass('invisible');
         points -= 50;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint2.prop('disabled', true);
     }
     else if (points === 50) {
         $synonyms.removeClass('invisible');
         points -= 25;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint2.prop('disabled', true);
     }
     else if (points === 25) {
         $synonyms.removeClass('invisible');
         points -= 15;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint2.prop('disabled', true);
     }
 }
@@ -111,19 +139,19 @@ function showHint3() {
     if (points === 100) {
         $firstLetter.removeClass('invisible');
         points -= 50;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint3.prop('disabled', true);
     }
     else if (points === 50) {
         $firstLetter.removeClass('invisible');
         points -= 25;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint3.prop('disabled', true);
     }
     else if (points === 25) {
         $firstLetter.removeClass('invisible');
         points -= 15;
-        $('#points').text(`Your points: ${points}`)
+        $('#points').text(`Your remaining points: ${points}`)
         $hint3.prop('disabled', true);
     }
 }
