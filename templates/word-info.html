@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+    <h1>Your word is <span class="text-warning">{{ word }}</span>!</h1>
+    <hr>
+    <h4><span class="text-warning text-capitalize">{{ word }}</span> means {{ definition }}.</h4>
+    <hr>
+    <h4><span class="text-warning text-capitalize">{{ word }}</span> is a/an {{ pos }}.</h4>
+    <hr>
+    <h4>The following are synonyms for <span class="text-warning">{{ word }}</span>:
+        <ul>{% for synonym in synonyms %}
+            <li>{{ synonym }}</li>
+            {% endfor %}
+        </ul>
+    </h4>
+    <form action='/game/play'>
+        <button id="replay" class="btn btn-success">Play again!</button>
+    </form>
+    <form action='/word-lookup'>
+        <button id="lookup" class="btn btn-success">Look up another word</button>
+    </form>
+</body>
+{% endblock %}

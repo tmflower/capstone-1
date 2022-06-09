@@ -4,12 +4,11 @@ let timer;
 function startGame() {   
     points = 100;
     $('#points').text(`Your remaining points: ${points}`);         
-    let counter = 30;
+    let counter = 60;
     $('#game-over').addClass('invisible');
     $('#word-info').removeClass('invisible');
     $('#letters').removeClass('invisible');
     $('#play-btn').addClass('invisible');
-    $('#replay').removeClass('invisible');
     console.log("inside start game")
     timer = setInterval(function(){              
         console.log(counter);
@@ -37,13 +36,11 @@ function endGame() {
 }
 
 $('#results').on('click', getResults);
-
 function getResults() {
     location.replace('/game/finish')
 }
 
 $('#replay').on('click', playAgain);
-
 function playAgain() {
     location.replace('/game/play');
 }
@@ -135,21 +132,21 @@ const $hint3 = $('#hint-3')
 $hint3.on('click', showHint3);
 
 function showHint3() {
-    const $firstLetter = $('#first-letter');
+    const $thirdLetter = $('#third-letter');
     if (points === 100) {
-        $firstLetter.removeClass('invisible');
+        $thirdLetter.removeClass('invisible');
         points -= 50;
         $('#points').text(`Your remaining points: ${points}`)
         $hint3.prop('disabled', true);
     }
     else if (points === 50) {
-        $firstLetter.removeClass('invisible');
+        $thirdLetter.removeClass('invisible');
         points -= 25;
         $('#points').text(`Your remaining points: ${points}`)
         $hint3.prop('disabled', true);
     }
     else if (points === 25) {
-        $firstLetter.removeClass('invisible');
+        $thirdLetter.removeClass('invisible');
         points -= 15;
         $('#points').text(`Your remaining points: ${points}`)
         $hint3.prop('disabled', true);

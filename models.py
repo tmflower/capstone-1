@@ -28,7 +28,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    points = db.Column(db.Integer, default=0)
+    total_points = db.Column(db.Integer, default=0)
+    rank = db.Column(db.Integer, default=0)
 
     @classmethod
     def signup(cls, username, password):

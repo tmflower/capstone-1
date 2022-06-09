@@ -5,8 +5,38 @@
     {% if score == 0 %}
     <h4>Sorry, you didn't get it this time! The mystery word was {{ word }} and you scored {{ score }} points.</h4>
     {% elif score > 0 %}
-    <h4>Congratulations, you win!! You guessed the word {{ word }} and you scored {{ score }} points.</h4>
+    <h4>Congratulations, you win!! You guessed the word <a href="/word-info/{{word}}">{{ word }}</a> and you scored {{ score }} points.</h4>
     {% endif %}
+    {% if 'user_id' in session %}
+        <h4>Your cumulative total points are {{ user.total_points }} and your current rank is {{ user.rank }}.</h4>
+    {% endif %}
+    <h4>WERD NERDZ CHAMPIONS</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Total Points</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            {% for leader in leaders %}
+            <tr>
+                <td> {{ leader.rank }} </td> 
+                <td>{{ leader.username }}</td>
+                <td>{{ leader.total_points }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<h5>Want to see your name and score on the leaderboard?<br>Earn enough cumulative points to rank among the top 5 Werd Nerdz players.<br>Your points will be saved automatically if you are logged in. Log in or sign up below:</h5>    
+<form action='/login'>
+    <button class="btn btn-success">Log in</button>
+</form>
+<form action='/signup'>
+    <button class="btn btn-success">Signup</button>
+</form>    
 <form action='/game/play'>
     <button id="replay" class="btn btn-success">Play again!</button>
 </form>

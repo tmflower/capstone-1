@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<button id="play-btn" class="btn btn-success">Start!</button>
+
 <h1>Guess the Mystery Word!</h1>
-<h1 id="timer">Timer</h1>
+<h1 id="timer">Timer: 60 Seconds</h1>
 <h2 id="points"></h2>
+<button id="play-btn" class="btn btn-success">Start!</button>
 <div id="game-over" class="invisible">
     <h2>GAME OVER!</h2>
     <button id="results" class="btn btn-info">Click for your results!</button>
@@ -15,8 +16,12 @@
     <div class="row row-cols-auto" style="height: 100px">
         {% for letter in word.word %}                           
         <div class="col-1 m-2 p-3 h-100 bg-info bg-opacity-25 border border-info text-center rounded">
-            {% if letter == word.word[0]%}
-                <h3 id="first-letter" class="invisible">{{ letter }}</h3>
+            {% if letter == word.word | first %}
+                <h3 id="first-letter">{{ letter }}</h3>
+            {% elif letter == word.word | last %}
+                <h3 id="last-letter">{{ letter }}</h3>
+            {% elif word.word.index(letter) == 2 %}
+                <h3 id="third-letter" class="invisible">{{ letter }}</h3>
             {% else %}
                 <h3 class="invisible">?</h3>                 
             {% endif %}
@@ -34,7 +39,7 @@
     <div>
         <button id="hint-1" class="btn btn-info mr-3 d-inline">Get Definition</button>
         <button id="hint-2" class="btn btn-info m-3 d-inline">Get Synonyms</button>
-        <button id="hint-3" class="btn btn-info d-inline">Get First Letter</button>
+        <button id="hint-3" class="btn btn-info d-inline">Get Another Letter</button>
     </div>
 </div>
 <h5 id="definition" class="invisible">The mystery word means {{ word.definition }}</h5>
@@ -44,5 +49,5 @@
     {% endfor %}
 </h5>
 <h3>Shhhh...the mystery word is:</h3>
-<h4 id="mystery-word">{{ word.word }}</h4>
+<h4 id="mystery-word" class="invisible">{{ word.word }}</h4>
 {% endblock %}

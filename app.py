@@ -3,7 +3,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from psycopg2 import IntegrityError
 from models import db, connect_db, User, Word
 from secret import KEY
-from forms import NewUserForm, UserLoginForm
+from forms import NewUserForm, UserLoginForm, WordForm
 from sqlalchemy.exc import IntegrityError
 import requests, json
 
@@ -73,11 +73,14 @@ def user_login():
         
         if user:
             session["user_id"] = user.id
+            # print(f"Session looks like this: {session}------------------------------")
             flash(f"You are logged in, {username}!", "success")
             return redirect('/game/info')
 
         else:
             flash("Username or password not valid. Please try again.", "danger")
+            form.username.data = ""
+            form.password.data = ""
 
     return render_template('login.html', form=form)
 
@@ -85,12 +88,13 @@ def user_login():
 @app.route('/logout')
 def user_logout():
     """Allows user to log out."""
-    session.pop("user_id")
+    flash("You've signed out!", "warning")
+    session.pop("user_id")    
     return redirect('/')
 
 
 @app.route('/game/info')
-def game_overview():
+def game_info():
     """Displays instructions/rules for game and start button."""
     return render_template('game-info.html')
 
@@ -99,28 +103,34 @@ def game_overview():
 def game_play():
     """Initiates game by getting a random word from Words API with the given parameters"""
 
-    querystring = {"lettersmin":"6","lettersMax":"10","syllablesMin":"2","syllablesMax":"6","frequencymin":"2.00","frequencymax":"5.00","hasDetails":"definitions", "hasDetails":"synonyms", "random":"true"}
+    querystring = {"lettersmin":"6","lettersMax":"10","syllablesMin":"2","syllablesMax":"5","frequencymin":"2.00","frequencymax":"5.00","hasDetails":"definitions", "hasDetails":"synonyms", "random":"true"}
     
     response = requests.request("GET", BASE_URL, headers=HEADERS, params=querystring)
     data = response.json()
     print(data)
 
-    mystery_word = Word(
-    word = data['word'], 
-    pos = data['results'][0]['partOfSpeech'], 
-    syllable_count = data['syllables']['count'], 
-    definition = data['results'][0]['definition'],
-    synonyms = data['results'][0]['synonyms']
-    )
+    if " " in data['word'] or "-" in data['word']:
+        return redirect('/game/play')
+    try:
+        mystery_word = Word(
+        word = data['word'], 
+        pos = data['results'][0]['partOfSpeech'], 
+        syllable_count = data['syllables']['count'], 
+        definition = data['results'][0]['definition'],
+        synonyms = data['results'][0]['synonyms']
+        )
 
-    db.session.add(mystery_word)
-    db.session.commit()
+        db.session.add(mystery_word)
+        db.session.commit()
 
-    synonyms = data['results'][0]['synonyms']
-
-    session['word'] = mystery_word.word
-    score = session['score']
-
+        synonyms = data['results'][0]['synonyms']
+        session['word'] = mystery_word.word
+        session['word_id'] = mystery_word.id
+        score = session['score']
+    
+    except IntegrityError:
+        return redirect('/game/play')
+        
     return render_template('/game-play.html', word=mystery_word, synonyms=synonyms, score=score)
 
 
@@ -141,7 +151,7 @@ def get_score():
     score = result['score']
     session['score'] = score
     print(f"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@{score}")
-    print(f"Session score is ${session['score']}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    print(f"Session looks like this at get score route: {session}------------------------------")
     return result
 
 
@@ -151,5 +161,82 @@ def show_stats():
     word = session['word']
     print(f"WORD is {word}******************************************")
     score = session['score']
-    print(f"SCORE is {score}********************************")
-    return render_template('game-finish.html', score=score, word=word)
+    print(f"SCORE is {score}********************************")    
+    if "user_id" in session:
+        id = session['user_id']
+        user = User.query.get(id)
+    else:
+        user = "anonymous"
+    print(f"USER is {user}********************************")
+    print(f"Session looks like this at game finish route: {session},,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
+    update_points()
+    update_rankings()
+    leaders = User.query.order_by(User.total_points.desc()).limit(5)
+    return render_template('game-finish.html', score=score, word=word, leaders=leaders, user=user)
+
+
+def update_points():
+    """Adds current round score to logged-in user's running points total"""
+    if "user_id" in session:
+        id = session['user_id']
+        u = User.query.get(id)
+        u.total_points = u.total_points + session['score']
+        print(f"Total points for this user: {u.total_points}@#$@#$@#$@#$@#$@#$@#$@#$@$@#$@#$@#$@#$@#$@")
+        db.session.commit()
+    else:
+        return redirect('/game/finish')
+
+
+def update_rankings():
+    """Ranks players in descending order according to greatest cumulative points earned."""
+    rankings = User.query.order_by(User.total_points.desc()).all()
+    for user in rankings:
+        user.rank = rankings.index(user)+1
+        print(f"{user.username} has the rank of {user.rank}")
+        db.session.commit()
+    
+
+@app.route('/word-info/<word>')
+def show_word_info(word):
+    """Provides details about the user's selected word"""
+    get_word = Word.query.filter_by(word=word).all()
+    print(f"GET WORD looks like this: {get_word}********************************************* and is type: type{get_word}")
+    word_info = get_word[0]
+    word = word_info.word
+    definition = word_info.definition
+    pos = word_info.pos
+    syns = word_info.synonyms
+    syns2 = syns.replace('{', '')
+    syns3 = syns2.replace('}', '')
+    synonyms = syns3.split(',')
+    return render_template('word-info.html', word=word, definition=definition, pos=pos, synonyms=synonyms)
+
+
+@app.route('/word-lookup', methods=["GET", "POST"])
+def lookup_word():
+    """Allows user to type in a word and get definition and get information about the word"""
+    form = WordForm()
+    word = form.word.data
+
+    existing_word = Word.query.filter(Word.word==word).first()
+    if existing_word:
+        word = existing_word
+        return redirect (f'/word-info/{word}')
+
+    if request.method == "POST":
+
+        response = requests.request("GET", f"https://wordsapiv1.p.rapidapi.com/words/{word}", headers=HEADERS)
+        data = response.json()
+
+        #### Think about adding a conditional loop in here for multiple definitions/pos
+        #### Could be a 'click to see more' if I put the conditional in jinja template
+        #### Index needs to be a variable that increases based on length of results
+        #### Could use error handling for invalid words/characters
+
+        word = Word(word=data['word'], definition=data['results'][0]['definition'], pos=data['results'][0]['partOfSpeech'])
+        db.session.add(word)
+        db.session.commit()
+        return redirect (f'/word-info/{word}')
+            
+    return render_template('word-form.html', form=form, word=word)
+

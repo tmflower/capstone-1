@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+    <p class="alert alert-{{ category }}">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+{% endwith %}
 <h1>Welcome to Werd Nerdz!</h1>
 <h3>What would you like to do today?</h3>
 <form action='/game/info'>
@@ -9,6 +16,6 @@
     <button class="btn btn-success">Log in</button>
 </form>
 <form action='/signup'>
-    <button class="btn btn-success">Signup</button>
+    <button class="btn btn-success">Sign up</button>
 </form>
 {% endblock %}
