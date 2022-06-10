@@ -1,5 +1,7 @@
 MAJOR ISSUES:
 
+-When the first or last letter appears more than once in a word, it is revealed along with the first or last. I thought my "if statements" in the template were written to only reveal the first and last using Jinja filters (also tried using index[0] and [length-1] but got same result). This is especially problematic when the extra letter provided by the hint (letter #3) is already showing.
+
 -startGame function runs on every click (not just the selected button) and re-runs automatically over and over again. WHY??? This also resets the score, even though a new game is not started.
         FIXED: reload was initiated every time game started; placed button for startGame function on same page as game to resolve; also needed to add another clearInterval(timer) to stop countdown if user guesses correctly (not just when countdown hits 0)
 
@@ -9,8 +11,6 @@ MAJOR ISSUES:
 
 
 OTHER ISSUES:
-
--When the first or last letter appears more than once in a word, it is revealed along with the first or last. I thought my "if statements" in the template were written to only reveal the first and last using Jinja filters (also tried using index[0] and [length-1] but got same result).
 
 -Form fields do not clear when error excepted for same username...should they or can they?
         FIXED: added empty strings at form.username.data and form.password.data
@@ -40,7 +40,10 @@ NEXT STEPS:
 -Add player ranking & cumulative points (for logged-in users) to game finish screen...could also show rank out of total number of players but still need to get that number.
     DONE!
 -Connect words to users using users_words table
+-Add button for user to see all their words
 -Add anchor tags to word at game finish; link to info about word & word lookup
+    DONE!
+
 
 
 NEXT NEXT STEPS:

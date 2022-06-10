@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+    <p class="alert alert-{{ category }}">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+{% endwith %}
 
 <h1>Guess the Mystery Word!</h1>
 <h1 id="timer">Timer: 60 Seconds</h1>
@@ -48,6 +55,5 @@
     <p>{{ synonym }}</p>
     {% endfor %}
 </h5>
-<h3>Shhhh...the mystery word is:</h3>
 <h4 id="mystery-word" class="invisible">{{ word.word }}</h4>
 {% endblock %}

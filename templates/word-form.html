@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+    <p class="alert alert-{{ category }}">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
     <h1>Look Up Word</h1>
     <form id="word-lookup-form" method="POST">
         {{form.hidden_tag()}}

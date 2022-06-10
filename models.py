@@ -30,6 +30,8 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     total_points = db.Column(db.Integer, default=0)
     rank = db.Column(db.Integer, default=0)
+    words = db.Column(db.ForeignKey('words.id', ondelete="cascade"))
+    word = db.relationship('Word')
 
     @classmethod
     def signup(cls, username, password):
@@ -50,5 +52,5 @@ class Users_Words(db.Model):
     __tablename__ = "users_words"
 
     id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.ForeignKey('users.id'))
-    word = db.Column(db.ForeignKey('words.id'))
+    user = db.Column(db.ForeignKey('users.id', ondelete="cascade"))
+    word = db.Column(db.ForeignKey('words.id', ondelete="cascade"))

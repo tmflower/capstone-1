@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 <body>
-    <h1>Your word is <span class="text-warning">{{ word }}</span>!</h1>
+    <h1>Your word is <span class="text-warning">{{ word.word }}</span>!</h1>
     <hr>
-    <h4><span class="text-warning text-capitalize">{{ word }}</span> means {{ definition }}.</h4>
+    <h4><span class="text-warning text-capitalize">{{ word.word }}</span> means {{ word.definition }}.</h4>
     <hr>
-    <h4><span class="text-warning text-capitalize">{{ word }}</span> is a/an {{ pos }}.</h4>
+    <h4><span class="text-warning text-capitalize">{{ word.word }}</span> is a/an {{ word.pos }}.</h4>
     <hr>
-    <h4>The following are synonyms for <span class="text-warning">{{ word }}</span>:
+    <h4>The following are synonyms for <span class="text-warning">{{ word.word }}</span>:
         <ul>{% for synonym in synonyms %}
             <li>{{ synonym }}</li>
             {% endfor %}
@@ -19,5 +19,13 @@
     <form action='/word-lookup'>
         <button id="lookup" class="btn btn-success">Look up another word</button>
     </form>
+    {% if 'user_id' in session %}
+    <form action='/user-words'>
+        <button class="btn btn-success">See your words</button>
+    </form>
+    <form action="/word-info/{{ word.word }}/delete" method="POST">
+        <button class="btn btn-danger">Delete this word</button>
+    </form>
+    {% endif %}
 </body>
 {% endblock %}

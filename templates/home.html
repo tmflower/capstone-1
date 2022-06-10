@@ -12,10 +12,20 @@
 <form action='/game/info'>
     <button class="btn btn-success">Play game!</button>
 </form>
-<form action='/login'>
-    <button class="btn btn-success">Log in</button>
-</form>
-<form action='/signup'>
-    <button class="btn btn-success">Sign up</button>
-</form>
+{% if 'user_id' in session %}
+    <form action='/user-words'>
+        <button class="btn btn-success">See your words</button>
+    </form>
+    <form action='/word-lookup'>
+        <button id="lookup" class="btn btn-success">Look up a word</button>
+    </form>
+{% endif %}
+{% if 'user_id' not in session %}
+    <form action='/login'>
+        <button class="btn btn-success">Log in</button>
+    </form>
+    <form action='/signup'>
+        <button class="btn btn-success">Sign up</button>
+    </form>
+{% endif %}
 {% endblock %}

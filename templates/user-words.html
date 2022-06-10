@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+    <p class="alert alert-{{ category }}">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
+<h1>Your Words</h1>
+<ul id="user-words">
+    {% for word in list %}
+    <li><a href="/word-info/{{word.word}}">{{ word.word }}</a></li>
+    {% endfor %}
+<form action='/game/play'>
+    <button id="replay" class="btn btn-success">Play again!</button>
+</form>
+
+{% endblock %}

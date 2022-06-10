@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<!-- if player in session, show response below; else show a loser response...with option to get word info -->
+
 <h1>Game Results</h1>
     {% if score == 0 %}
-    <h4>Sorry, you didn't get it this time! The mystery word was {{ word }} and you scored {{ score }} points.</h4>
+    <h4>Sorry, you didn't get it this time! The mystery word was <a href="/word-info/{{word}}">{{ word }}</a> and you scored {{ score }} points.</h4>
     {% elif score > 0 %}
     <h4>Congratulations, you win!! You guessed the word <a href="/word-info/{{word}}">{{ word }}</a> and you scored {{ score }} points.</h4>
     {% endif %}
@@ -30,14 +30,20 @@
             {% endfor %}
         </tbody>
     </table>
-<h5>Want to see your name and score on the leaderboard?<br>Earn enough cumulative points to rank among the top 5 Werd Nerdz players.<br>Your points will be saved automatically if you are logged in. Log in or sign up below:</h5>    
-<form action='/login'>
-    <button class="btn btn-success">Log in</button>
-</form>
-<form action='/signup'>
-    <button class="btn btn-success">Signup</button>
-</form>    
+{% if 'user_id' not in session %}
+    <h5>Want to see your name and score on the leaderboard?<br>Earn enough cumulative points to rank among the top 5 Werd Nerdz players.<br>Your points will be saved automatically if you are logged in. Log in or sign up below:</h5>    
+    <form action='/login'>
+        <button class="btn btn-success">Log in</button>
+    </form>
+    <form action='/signup'>
+        <button class="btn btn-success">Signup</button>
+    </form> 
+{% endif %}   
 <form action='/game/play'>
     <button id="replay" class="btn btn-success">Play again!</button>
 </form>
+<form action='/user-words'>
+    <button class="btn btn-success">See your words</button>
+</form>
+
 {% endblock %}

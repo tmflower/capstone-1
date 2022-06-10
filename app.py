@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, flash, session, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from psycopg2 import IntegrityError
-from models import db, connect_db, User, Word
+from models import db, connect_db, User, Word, Users_Words
 from secret import KEY
 from forms import NewUserForm, UserLoginForm, WordForm
 from sqlalchemy.exc import IntegrityError
@@ -18,15 +18,13 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
-# db.drop_all()
-# db.create_all()
-
 BASE_URL = "https://wordsapiv1.p.rapidapi.com/words/"
 
 HEADERS = {
 	"X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
 	"X-RapidAPI-Key": KEY
 }
+
 
 @app.route('/')
 def home_page():
@@ -73,7 +71,6 @@ def user_login():
         
         if user:
             session["user_id"] = user.id
-            # print(f"Session looks like this: {session}------------------------------")
             flash(f"You are logged in, {username}!", "success")
             return redirect('/game/info')
 
@@ -145,13 +142,9 @@ def check_guess():
 def get_score():
     """Get final score when game ends"""    
     output = request.get_json()
-    print(f"**************************************{output}")
     result = json.loads(output)
-    print(f"#######################################{result}")
     score = result['score']
     session['score'] = score
-    print(f"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@{score}")
-    print(f"Session looks like this at get score route: {session}------------------------------")
     return result
 
 
@@ -159,19 +152,25 @@ def get_score():
 def show_stats():
     """Displays feedback and game stats when user guesses word correctly or time runs out."""
     word = session['word']
-    print(f"WORD is {word}******************************************")
-    score = session['score']
-    print(f"SCORE is {score}********************************")    
+    score = session['score']   
+
     if "user_id" in session:
-        id = session['user_id']
-        user = User.query.get(id)
+        """THIS IS THE ATTEMPT USING A SET"""
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        word_id = session['word_id']
+        users_words = Users_Words(user=user_id, word=word_id)
+        print(f"users_words looks like this: ************************************{users_words}")
+        
+        db.session.add(users_words)
+        db.session.commit()
+        
     else:
         user = "anonymous"
-    print(f"USER is {user}********************************")
-    print(f"Session looks like this at game finish route: {session},,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
     update_points()
     update_rankings()
     leaders = User.query.order_by(User.total_points.desc()).limit(5)
+    
     return render_template('game-finish.html', score=score, word=word, leaders=leaders, user=user)
 
 
@@ -181,7 +180,6 @@ def update_points():
         id = session['user_id']
         u = User.query.get(id)
         u.total_points = u.total_points + session['score']
-        print(f"Total points for this user: {u.total_points}@#$@#$@#$@#$@#$@#$@#$@#$@$@#$@#$@#$@#$@#$@")
         db.session.commit()
     else:
         return redirect('/game/finish')
@@ -192,24 +190,18 @@ def update_rankings():
     rankings = User.query.order_by(User.total_points.desc()).all()
     for user in rankings:
         user.rank = rankings.index(user)+1
-        print(f"{user.username} has the rank of {user.rank}")
         db.session.commit()
     
 
 @app.route('/word-info/<word>')
 def show_word_info(word):
     """Provides details about the user's selected word"""
-    get_word = Word.query.filter_by(word=word).all()
-    print(f"GET WORD looks like this: {get_word}********************************************* and is type: type{get_word}")
-    word_info = get_word[0]
-    word = word_info.word
-    definition = word_info.definition
-    pos = word_info.pos
-    syns = word_info.synonyms
+    word = Word.query.filter_by(word=word).first()
+    syns = word.synonyms
     syns2 = syns.replace('{', '')
     syns3 = syns2.replace('}', '')
-    synonyms = syns3.split(',')
-    return render_template('word-info.html', word=word, definition=definition, pos=pos, synonyms=synonyms)
+    synonyms = syns3.split(',') 
+    return render_template('word-info.html', word=word, synonyms=synonyms)
 
 
 @app.route('/word-lookup', methods=["GET", "POST"])
@@ -228,15 +220,56 @@ def lookup_word():
         response = requests.request("GET", f"https://wordsapiv1.p.rapidapi.com/words/{word}", headers=HEADERS)
         data = response.json()
 
-        #### Think about adding a conditional loop in here for multiple definitions/pos
-        #### Could be a 'click to see more' if I put the conditional in jinja template
-        #### Index needs to be a variable that increases based on length of results
-        #### Could use error handling for invalid words/characters
+        try:
+            word = Word(
+                word=data['word'], 
+                definition=data['results'][0]['definition'], 
+                pos=data['results'][0]['partOfSpeech'], 
+                synonyms=data['results'][0]['synonyms']
+                )
 
-        word = Word(word=data['word'], definition=data['results'][0]['definition'], pos=data['results'][0]['partOfSpeech'])
-        db.session.add(word)
-        db.session.commit()
-        return redirect (f'/word-info/{word}')
+            db.session.add(word)
+            db.session.commit()
+
+            return redirect (f'/word-info/{word.word}')
+
+        except KeyError:
+            flash("Sorry, we don't have all the information for this word. Please try another word.", "warning")
             
     return render_template('word-form.html', form=form, word=word)
 
+
+@app.route('/word-info/<word>/delete', methods=["POST"])
+def delete_word(word):
+    """Allows logged-in user to delete selected word from their words list"""
+    word = Word.query.filter_by(word=word).first()
+    
+    if "user_id" in session:        
+        db.session.delete(word)
+        db.session.commit()
+        flash("You have deleted a word from your list.", "warning")
+        return redirect('/game/play')
+        
+    else:
+        flash("You are not authorized to access this page.", "danger")
+        return redirect('/')
+
+
+@app.route('/user-words')
+def show_user_words():
+    """Displays list of words from user's games and allows user to view more info or delete words"""
+    
+    user_words_list = []
+    
+    if "user_id" not in session:
+        flash("Sorry, you must have an account to see your words.", "danger")
+        return redirect('/')
+
+    else:
+        user_id = session['user_id']
+        users_words = Users_Words.query.filter_by(user=user_id).all() 
+        for word in users_words:
+            user_word = Word.query.get(word.word)
+            user_words_list.append(user_word)
+
+        return render_template('user-words.html', list=user_words_list)

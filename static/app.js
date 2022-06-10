@@ -14,7 +14,7 @@ function startGame() {
         console.log(counter);
         $('#timer').text(`${counter}`);
         counter--;
-        if (counter === 0) {
+        if (counter === -1) {
             clearInterval(timer);
             console.log('timer has stopped!')
             points = 0;
@@ -68,7 +68,6 @@ async function checkGuess(evt) {
         console.log(points);
         getScore();
         endGame();
-        // location.assign('/game/finish')
     }
 
     else {
