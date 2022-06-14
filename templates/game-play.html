@@ -9,28 +9,24 @@
 {% endif %}
 {% endwith %}
 
-<h1>Guess the Mystery Word!</h1>
-<h1 id="timer">Timer: 60 Seconds</h1>
-<h2 id="points"></h2>
+<h1 class="display-1">Guess the Mystery Word!</h1>
+<h2 id="timer" class="display-1 text-danger">Timer: 60 Seconds</h2>
+<h2 id="points" class="display-3"></h2>
 <button id="play-btn" class="btn btn-success">Start!</button>
-<div id="game-over" class="invisible">
-    <h2>GAME OVER!</h2>
-    <button id="results" class="btn btn-info">Click for your results!</button>
-</div>
-<br>
+
 <h3 id="word-info" class="invisible">The mystery word is a(n) {{ word.pos }} with {{ word.syllable_count }} syllables.</h3>
 <div id="letters" class="invisible container mt-5 mb-3">
     <div class="row row-cols-auto" style="height: 100px">
         {% for letter in word.word %}                           
-        <div class="col-1 m-2 p-3 h-100 bg-info bg-opacity-25 border border-info text-center rounded">
-            {% if letter == word.word | first %}
-                <h3 id="first-letter">{{ letter }}</h3>
+        <div class="col-1 m-2 pb-3 h-100 bg-info bg-opacity-25 border border-info text-center rounded">
+            {% if letter == word.word[0] %}
+                <p id="first-letter" class="display-2 text-warning text-uppercase">{{ letter }}</p>
             {% elif letter == word.word | last %}
-                <h3 id="last-letter">{{ letter }}</h3>
+                <p id="last-letter" class="display-2 text-warning text-uppercase">{{ letter }}</p>
             {% elif word.word.index(letter) == 2 %}
-                <h3 id="third-letter" class="invisible">{{ letter }}</h3>
+                <p id="third-letter" class="display-2 invisible text-warning text-uppercase">{{ letter }}</p>
             {% else %}
-                <h3 class="invisible">?</h3>                 
+                <p class="invisible display-2">?</p>                 
             {% endif %}
         </div>
         {% endfor %}
@@ -55,5 +51,10 @@
     <p>{{ synonym }}</p>
     {% endfor %}
 </h5>
+<div id="game-over" class="invisible">
+    <h2 id="lose" class="invisible display-2 text-warning">SORRY, TIME'S UP!</h2>
+    <h2 id="win" class="invisible display-2 text-success">YOU WIN!</h2>
+    <button id="results" class="btn btn-info">Click for your results!</button>
+</div>
 <h4 id="mystery-word" class="invisible">{{ word.word }}</h4>
 {% endblock %}

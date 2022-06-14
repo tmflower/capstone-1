@@ -1,49 +1,57 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Game Results</h1>
-    {% if score == 0 %}
-    <h4>Sorry, you didn't get it this time! The mystery word was <a href="/word-info/{{word}}">{{ word }}</a> and you scored {{ score }} points.</h4>
-    {% elif score > 0 %}
-    <h4>Congratulations, you win!! You guessed the word <a href="/word-info/{{word}}">{{ word }}</a> and you scored {{ score }} points.</h4>
-    {% endif %}
-    {% if 'user_id' in session %}
-        <h4>Your cumulative total points are {{ user.total_points }} and your current rank is {{ user.rank }}.</h4>
-    {% endif %}
-    <h4>WERD NERDZ CHAMPIONS</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Total Points</th>
-            </tr>
-        </thead>
-        
-        <tbody>
-            {% for leader in leaders %}
-            <tr>
-                <td> {{ leader.rank }} </td> 
-                <td>{{ leader.username }}</td>
-                <td>{{ leader.total_points }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% if 'user_id' not in session %}
-    <h5>Want to see your name and score on the leaderboard?<br>Earn enough cumulative points to rank among the top 5 Werd Nerdz players.<br>Your points will be saved automatically if you are logged in. Log in or sign up below:</h5>    
-    <form action='/login'>
-        <button class="btn btn-success">Log in</button>
+<div class="container">
+    <h1 class="display-2 text-center">Game Results</h1>
+    <div class="container m-5 text-center">
+        {% if score == 0 %}
+        <h4>Sorry, you didn't get it this time!</h4>
+        <h4>The mystery word was <a href="/word-info/{{word}}" class="text-warning">{{ word }}</a> and you scored <span class="text-warning">{{ score }}</span> points this round.</h4>
+        {% elif score > 0 %}
+        <h4>Congratulations, you win!!</h4>
+        <h4>You guessed the word <a href="/word-info/{{word}}" class="text-warning">{{ word }}</a> and you scored <span class="text-warning">{{ score }}</span> points this round.</h4>
+        {% endif %}
+        {% if 'user_id' in session %}
+            <h4>Your cumulative total points are <span class="text-warning">{{ user.total_points }}</span> and your current rank is <span class="text-warning">{{ user.rank }}</span>.</h4>
+        {% endif %}
+    </div>
+    <div class="container">
+        <h4 class="display-6 text-center text-info">WERD NERDZ TOP 5 CHAMPIONS</h4>
+        <table class="table table-light">
+            <thead>
+                <tr class="table-secondary">
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Total Points</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for leader in leaders %}
+                <tr {% if leader.rank == 1 %} id="winner" class="text-success"{% endif %}>                    
+                    <td>{{ leader.rank }}{% if leader.rank == 1 %}  <i id="trophy" class="fa-solid fa-trophy"></i>{% endif %}</td>                    
+                    <td>{{ leader.username }}</td>
+                    <td>{{ leader.total_points }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if 'user_id' not in session %}
+        <h5>Want to see your name and score on the leaderboard?<br>Earn enough cumulative points to rank among the top 5 Werd Nerdz players.<br>Your points will be saved automatically if you are logged in. Log in or sign up below:</h5>    
+        <form action='/login'>
+            <button class="btn btn-info">Log in</button>
+        </form>
+        <form action='/signup'>
+            <button class="btn btn-info">Signup</button>
+        </form> 
+    {% endif %}   
+    <form action='/game/play'>
+        <button id="replay" class="btn btn-success">Play again!</button>
     </form>
-    <form action='/signup'>
-        <button class="btn btn-success">Signup</button>
-    </form> 
-{% endif %}   
-<form action='/game/play'>
-    <button id="replay" class="btn btn-success">Play again!</button>
-</form>
-<form action='/user-words'>
-    <button class="btn btn-success">See your words</button>
-</form>
+    <form action='/user-words'>
+        <button class="btn btn-info">See your words</button>
+    </form>
+</div>
 
 {% endblock %}

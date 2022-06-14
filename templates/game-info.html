@@ -7,22 +7,26 @@
     {% endfor %}
 {% endif %}
 {% endwith %}
-<h1>How to Play</h1>
-<ul>
-    <li>Your goal: Score maximum points by guessing the mystery word within 60 seconds while using the fewest number of hints.</li>
-    <li>Your reward: Ranking on the leaderboard (if you're logged in) and bragging rights as the nerdiest of the Werd Nerdz!</li>
-    <li>You may guess as many times as you want to without a penalty.</li>
-    <li>You'll start with 100 points and a few freebie hints about the mystery word. Points will be deducted as you use additional hints:</li>
-    <ul>
-        <li>1st hint: 50 points deducted</li>
-        <li>2nd hint: 25 more points deducted</li>
-        <li>3rd hint: 15 more points deducted</li>
-    </ul>
-</ul>
 
-<h3>Did we mention that the clock will be ticking?</h3>
-<h4>You'll have 60 seconds to guess the mystery word.<br>If the time runs out: sorry, no points for you! Are you ready?</h4>
-<form action='/game/play'>
-    <button class="btn btn-success">Play now!</button>
-</form>
+<div class="container">
+    <h1 class="display-2">How to Play</h1>
+    <ul id="instructions">
+        <li>Your goal: Score maximum points by guessing the mystery word within 60 seconds while using the fewest number of hints.</li>
+        <li>Your reward: Ranking on the leaderboard (if you're logged in) and bragging rights as the nerdiest of the Werd Nerdz!</li>
+        <li>You may guess as many times as you want to without a penalty.</li>
+        <li>You'll start with 100 points and a few freebie hints about the mystery word. Points will be deducted as you use additional hints:</li>
+        <ul>
+            <li>1st hint: 50 points deducted</li>
+            <li>2nd hint: 25 more points deducted</li>
+            <li>3rd hint: 15 more points deducted</li>
+        </ul>
+    </ul>
+    <hr>
+    <h3>Did we mention that the clock will be ticking?</h3>
+    <h4>You'll have 60 seconds to guess the mystery word.<br>If the time runs out: sorry, no points for you! Are you ready?</h4>
+    <form action='/game/play'>
+        <button class="btn btn-success">Play now!</button>
+    </form>
+</div>
+
 {% endblock %}

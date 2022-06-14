@@ -40,7 +40,9 @@ NEXT STEPS:
 -Add player ranking & cumulative points (for logged-in users) to game finish screen...could also show rank out of total number of players but still need to get that number.
     DONE!
 -Connect words to users using users_words table
+    DONE!
 -Add button for user to see all their words
+    DONE!
 -Add anchor tags to word at game finish; link to info about word & word lookup
     DONE!
 

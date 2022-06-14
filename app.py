@@ -123,12 +123,12 @@ def game_play():
         synonyms = data['results'][0]['synonyms']
         session['word'] = mystery_word.word
         session['word_id'] = mystery_word.id
-        score = session['score']
+        # score = session['score']
     
     except IntegrityError:
         return redirect('/game/play')
         
-    return render_template('/game-play.html', word=mystery_word, synonyms=synonyms, score=score)
+    return render_template('/game-play.html', word=mystery_word, synonyms=synonyms)
 
 
 @app.route('/game/check-guess', methods=["GET","POST"])
@@ -155,7 +155,6 @@ def show_stats():
     score = session['score']   
 
     if "user_id" in session:
-        """THIS IS THE ATTEMPT USING A SET"""
         user_id = session['user_id']
         user = User.query.get(user_id)
         word_id = session['word_id']
@@ -207,13 +206,14 @@ def show_word_info(word):
 @app.route('/word-lookup', methods=["GET", "POST"])
 def lookup_word():
     """Allows user to type in a word and get definition and get information about the word"""
+            
     form = WordForm()
     word = form.word.data
 
     existing_word = Word.query.filter(Word.word==word).first()
     if existing_word:
         word = existing_word
-        return redirect (f'/word-info/{word}')
+        return redirect (f'/word-info/{word.word}')
 
     if request.method == "POST":
 
@@ -231,6 +231,13 @@ def lookup_word():
             db.session.add(word)
             db.session.commit()
 
+            if "user_id" in session:
+                user_id = session['user_id']
+                users_words = Users_Words(user=user_id, word=word.id)
+        
+                db.session.add(users_words)
+                db.session.commit()
+            
             return redirect (f'/word-info/{word.word}')
 
         except KeyError:

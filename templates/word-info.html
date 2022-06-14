@@ -17,11 +17,11 @@
         <button id="replay" class="btn btn-success">Play again!</button>
     </form>
     <form action='/word-lookup'>
-        <button id="lookup" class="btn btn-success">Look up another word</button>
+        <button id="lookup" class="btn btn-info">Look up a word</button>
     </form>
     {% if 'user_id' in session %}
     <form action='/user-words'>
-        <button class="btn btn-success">See your words</button>
+        <button class="btn btn-info">See your words</button>
     </form>
     <form action="/word-info/{{ word.word }}/delete" method="POST">
         <button class="btn btn-danger">Delete this word</button>

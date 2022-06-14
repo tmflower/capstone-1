@@ -9,7 +9,7 @@
 {% endif %}
 {% endwith %}
 
-    <h1>Look Up Word</h1>
+    <h1>Look Up a Word</h1>
     <form id="word-lookup-form" method="POST">
         {{form.hidden_tag()}}
         {% for field in form if field.widget.input_type != 'hidden' %}

@@ -1,5 +1,6 @@
 let points;
 let timer;
+let result;
 
 function startGame() {   
     points = 100;
@@ -15,8 +16,8 @@ function startGame() {
         $('#timer').text(`${counter}`);
         counter--;
         if (counter === -1) {
+            result = lose;
             clearInterval(timer);
-            console.log('timer has stopped!')
             points = 0;
             $('#points').text(`Your remaining points: 0`);
             getScore();
@@ -29,9 +30,24 @@ const playBtn = $('#play-btn');
 playBtn.on('click', startGame);
 
 function endGame() {
-    $('#word-info').addClass('invisible');
-    $('#letters').addClass('invisible');
-    $('#game-over').removeClass('invisible');
+    $('#word-info').remove();
+    $('#letters').remove();
+    $hint1.remove();
+    $hint2.remove();
+    $hint3.remove();
+    $('#definition').remove();
+    $('#synonyms').remove();
+    $guessForm.remove();
+    $guess.remove();
+    $('#game-over').removeClass('invisible')
+    if (result === lose) {
+        $('#lose').removeClass('invisible');
+        $('#win').remove();
+    }
+    else {
+        $('#win').removeClass('invisible');
+        $('#lose').remove();
+    }
     $('#replay').removeClass('invisible');
 }
 
@@ -63,6 +79,7 @@ async function checkGuess(evt) {
     let mysteryWord = $('#mystery-word').text()
 
     if (guess === mysteryWord) {
+        result = win;
         clearInterval(timer);
         $('#feedback').text("You guessed it!");
         console.log(points);
