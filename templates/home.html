@@ -7,23 +7,22 @@
     {% endfor %}
 {% endif %}
 {% endwith %}
-  
 <div class="container">
-    <!-- <img src="https://images.unsplash.com/photo-1506788941197-1cbf01bb8bc5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"> -->
     <div class="container text-center">
         <h1 class="display-1 p-3">Welcome to Werd Nerdz!</h1>
         <h2>Test your nerdy word skills by racing against the clock to guess a hidden mystery word.</h2>
         <h2>Earn points by using the fewest number of hints.</h2>
         <h2>Log in to save your results and compete on the leaderboard.</h2>
         <h2>Do you have what it takes to be a Werd Nerdz Champion?</h2>
-    <h3 class="display-4 p-3">What would you like to do today?</h3>
+        <img id="first-place" src="/static/achievement-g21c5cd96f_1280.png" class="my-3">
+        <hr>
+        <h3 class="display-4 p-3">What would you like to do today?</h3>
     </div>
-    <hr>
     <div class="container">
         <div class="row">
             <div class="col-12 d-flex justify-content-center">
                 <form action='/game/info'>
-                    <button class="btn btn-lg btn-success p-3 mb-3">Play game!</button>
+                    <button class="btn btn-success btn-lg p-3 mb-3">Play game!</button>
                 </form>
             </div>
         </div>
@@ -52,7 +51,7 @@
                     </form>
                 </div>
             {% endif %}
-        </div>  
+        </div> 
     </div>
 </div>
 

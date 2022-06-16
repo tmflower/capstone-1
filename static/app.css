@@ -21,3 +21,18 @@ body {
 #trophy {
     color: gold;
 }
+
+#first-place {
+    width: 20%;
+    padding-top: 10px;
+}
+
+#guess {
+    height: 45px;
+    border-radius: 5px;
+}
+
+#msg {
+    font-size: 2rem;
+    margin-top: 1rem;
+}

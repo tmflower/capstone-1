@@ -54,5 +54,6 @@ NEXT NEXT STEPS:
     DONE! (I think...all I did was redirect to reload the page which will fetch a new word. Is that legit?)
 -Write tests
 -Improve styling
+    DONE! (for now)
 
 

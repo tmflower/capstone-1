@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, redirect, flash, session, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from psycopg2 import IntegrityError
@@ -9,10 +10,10 @@ import requests, json
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///wordgame'
+app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get('DATABASE_URL', 'postgresql:///wordgame'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = 'mochi'
+app.config['SQLALCHEMY_ECHO'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mochi')
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
@@ -123,7 +124,6 @@ def game_play():
         synonyms = data['results'][0]['synonyms']
         session['word'] = mystery_word.word
         session['word_id'] = mystery_word.id
-        # score = session['score']
     
     except IntegrityError:
         return redirect('/game/play')
@@ -159,7 +159,6 @@ def show_stats():
         user = User.query.get(user_id)
         word_id = session['word_id']
         users_words = Users_Words(user=user_id, word=word_id)
-        print(f"users_words looks like this: ************************************{users_words}")
         
         db.session.add(users_words)
         db.session.commit()
@@ -258,7 +257,7 @@ def delete_word(word):
         return redirect('/game/play')
         
     else:
-        flash("You are not authorized to access this page.", "danger")
+        flash("You are not authorized to delete words.", "danger")
         return redirect('/')
 
 

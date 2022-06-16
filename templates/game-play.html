@@ -9,52 +9,92 @@
 {% endif %}
 {% endwith %}
 
-<h1 class="display-1">Guess the Mystery Word!</h1>
-<h2 id="timer" class="display-1 text-danger">Timer: 60 Seconds</h2>
-<h2 id="points" class="display-3"></h2>
-<button id="play-btn" class="btn btn-success">Start!</button>
+<div class="container text-center">
+    <h1 class="display-1">Guess the Mystery Word!</h1>
+    <h2 id="timer" class="display-1 text-danger">Timer: 60 Seconds</h2>
+    <h2 id="points" class="display-3"></h2>
+    <button type="button" class="btn btn-success btn-lg w-50" id="play-btn">Start!</button>
 
-<h3 id="word-info" class="invisible">The mystery word is a(n) {{ word.pos }} with {{ word.syllable_count }} syllables.</h3>
-<div id="letters" class="invisible container mt-5 mb-3">
-    <div class="row row-cols-auto" style="height: 100px">
-        {% for letter in word.word %}                           
-        <div class="col-1 m-2 pb-3 h-100 bg-info bg-opacity-25 border border-info text-center rounded">
-            {% if letter == word.word[0] %}
-                <p id="first-letter" class="display-2 text-warning text-uppercase">{{ letter }}</p>
-            {% elif letter == word.word | last %}
-                <p id="last-letter" class="display-2 text-warning text-uppercase">{{ letter }}</p>
-            {% elif word.word.index(letter) == 2 %}
-                <p id="third-letter" class="display-2 invisible text-warning text-uppercase">{{ letter }}</p>
-            {% else %}
-                <p class="invisible display-2">?</p>                 
-            {% endif %}
+    <div class="container invisible" id="active-game">
+
+        <h3 id="word-info">The mystery word is a(n) <span class="text-warning">{{ word.pos }}</span>.</h3>
+                <div id="letters" class="container mt-5 mb-3">
+                    <div class="row row-cols-auto justify-content-center" style="height: 100px">
+                        {% for letter in word.word %}                           
+                        <div class="col-1 m-2 pb-3 h-100 bg-info bg-opacity-25 border border-info text-center rounded">
+                            {% if letter == word.word | first %}
+                                <p id="first-letter" class="display-2 text-warning text-uppercase">{{ letter }}</p>
+                            {% elif letter == word.word | last %}
+                                <p id="last-letter" class="display-2 text-warning text-uppercase">{{ letter }}</p>
+                            {% else %}
+                                <p class="invisible display-2">?</p>                 
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+        <div class="container my-4">
+            <form action="/game/check-guess" method="POST" id="check-guess" class="form-control-lg">
+                <h4 id="feedback"></h4>
+                <input id="guess" type="text" name="guess" placeholder="Enter your guess">
+                <button class="btn btn-success d-inline">Guess</button>
+            </form>
+            <br>
+            <div id="hints">
+                <button id="hint-1" class="btn btn-info mr-3 d-inline">Get Definition</button>
+                <button id="hint-2" class="btn btn-info m-3 d-inline">Get Synonyms</button>
+                <button id="hint-3" class="btn btn-info d-inline">Get Syllables</button>
+            </div>
         </div>
-        {% endfor %}
+
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div id="definition" class="invisible card hint-cards">
+                        <div class="card-body">
+                            <h4 class="card-title">Definition</h4>
+                            <hr>
+                            <h5>The mystery word means {{ word.definition }}</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div id="synonyms" class="invisible card hint-cards">
+                        <div class="card-body">
+                            <h4 class="card-title">Synonyms</h4>
+                            <hr>
+                            <h5>The mystery word has the following synonyms:
+                                {% for synonym in synonyms %}
+                                <p>{{ synonym }}</p>
+                                {% endfor %}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div  id="syllables" class="invisible card hint-cards">
+                        <div class="card-body">
+                            <h4 class="card-title">Syllables</h4>
+                            <hr>
+                            <h5>The mystery word has {{ word.syllable_count }} syllables.</h5>                        
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <div id="game-over" class="invisible">
+            <h2 id="lose" class="invisible display-2 text-warning">SORRY, TIME'S UP!</h2>
+            <h2 id="win" class="invisible display-2 text-success">YOU WIN!</h2>
+            <button id="results" class="btn btn-info">Click for your results!</button>
+        </div>
+        <h4 id="mystery-word" class="invisible">{{ word.word }}</h4>
+
     </div>
+
 </div>
-<div class="container my-4">
-    <form action="/game/check-guess" method="POST" id="check-guess">
-        <h4 id="feedback"></h4>
-        <input id="guess" type="text" name="guess" placeholder="Enter your guess">
-        <button class="btn btn-success d-inline">Guess</button>
-    </form>
-    <br>
-    <div>
-        <button id="hint-1" class="btn btn-info mr-3 d-inline">Get Definition</button>
-        <button id="hint-2" class="btn btn-info m-3 d-inline">Get Synonyms</button>
-        <button id="hint-3" class="btn btn-info d-inline">Get Another Letter</button>
-    </div>
-</div>
-<h5 id="definition" class="invisible">The mystery word means {{ word.definition }}</h5>
-<h5 id="synonyms" class="invisible">The mystery word has the following synonyms:
-    {% for synonym in synonyms %}
-    <p>{{ synonym }}</p>
-    {% endfor %}
-</h5>
-<div id="game-over" class="invisible">
-    <h2 id="lose" class="invisible display-2 text-warning">SORRY, TIME'S UP!</h2>
-    <h2 id="win" class="invisible display-2 text-success">YOU WIN!</h2>
-    <button id="results" class="btn btn-info">Click for your results!</button>
-</div>
-<h4 id="mystery-word" class="invisible">{{ word.word }}</h4>
+
 {% endblock %}

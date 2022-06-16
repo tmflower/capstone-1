@@ -11,14 +11,14 @@
     <title></title>
 </head>
 <body>
-    <nav class="navbar navbar-brand bg-info"> <a class="px-3" href="/">WERD NERDZ</a>
-        <img src="https://cdn.pixabay.com/photo/2014/04/03/11/37/glasses-312005_960_720.png" width="60">
+    <nav class="navbar navbar-brand bg-info"> 
+            <a  href="/"><img src="/static/glasses-gcd96b83d7_1280.png" width="120" class="px-3">WERD NERDZ </a>
         {% if 'user_id' in session: %}
-            <form class="navbar-form navbar-right"><a href="/logout">Sign Out</a></form>
+            <form class="navbar-form navbar-right px-3"><a href="/logout">Sign Out</a></form>
         {% else: %}
-            <form class="navbar-form navbar-right"><a href="/login">Sign In</a></form>
+            <form class="navbar-form navbar-right px-3"><a href="/login">Sign In</a></form>
         {% endif %}
-</nav>
+    </nav>
         <div class="container mt-4">
             
             {% block content %}

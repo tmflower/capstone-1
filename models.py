@@ -19,7 +19,6 @@ class Word(db.Model):
     pos = db.Column(db.Text, default='Part of speech not available')
     definition = db.Column(db.Text, default='Definition not available')
     synonyms = db.Column(db.Text, default='Synonyms not available')
-    antonyms = db.Column(db.Text, default='Antonyms not available')
 
 class User(db.Model):
 
@@ -30,8 +29,6 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     total_points = db.Column(db.Integer, default=0)
     rank = db.Column(db.Integer, default=0)
-    words = db.Column(db.ForeignKey('words.id', ondelete="cascade"))
-    word = db.relationship('Word')
 
     @classmethod
     def signup(cls, username, password):
