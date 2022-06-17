@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, flash, session, request, jso
 from flask_debugtoolbar import DebugToolbarExtension
 from psycopg2 import IntegrityError
 from models import db, connect_db, User, Word, Users_Words
-from secret import KEY
+# from secret import KEY
 from forms import NewUserForm, UserLoginForm, WordForm
 from sqlalchemy.exc import IntegrityError
 import requests, json, os, re
@@ -16,11 +16,13 @@ if uri.startswith("postgres://"):
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', KEY)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mochi')
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+
+KEY = os.environ.get('SECRET_KEY', 'mochi')
 
 BASE_URL = "https://wordsapiv1.p.rapidapi.com/words/"
 
@@ -28,6 +30,7 @@ HEADERS = {
 	"X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
 	"X-RapidAPI-Key": KEY
 }
+
 
 
 @app.route('/')
