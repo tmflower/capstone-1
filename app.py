@@ -100,7 +100,6 @@ def game_info():
 @app.route('/game/play')
 def game_play():
     """Initiates game by getting a random word from Words API with the given parameters"""
-
     querystring = {"lettersmin":"6","lettersMax":"10","syllablesMin":"2","syllablesMax":"5","frequencymin":"2.00","frequencymax":"5.00","hasDetails":"definitions", "hasDetails":"synonyms", "random":"true"}
     
     response = requests.request("GET", BASE_URL, headers=HEADERS, params=querystring)
@@ -204,8 +203,7 @@ def show_word_info(word):
 
 @app.route('/word-lookup', methods=["GET", "POST"])
 def lookup_word():
-    """Allows user to type in a word and get definition and get information about the word"""
-            
+    """Allows user to type in a word and get definition and get information about the word"""            
     form = WordForm()
     word = form.word.data
 
@@ -263,8 +261,7 @@ def delete_word(word):
 
 @app.route('/user-words')
 def show_user_words():
-    """Displays list of words from user's games and allows user to view more info or delete words"""
-    
+    """Displays list of words from user's games and allows user to view more info or delete words"""    
     user_words_list = []
     
     if "user_id" not in session:
