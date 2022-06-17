@@ -1,4 +1,3 @@
-import os
 from flask import Flask, render_template, redirect, flash, session, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from psycopg2 import IntegrityError
@@ -6,11 +5,15 @@ from models import db, connect_db, User, Word, Users_Words
 from secret import KEY
 from forms import NewUserForm, UserLoginForm, WordForm
 from sqlalchemy.exc import IntegrityError
-import requests, json
+import requests, json, os, re
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get('DATABASE_URL', 'postgresql:///wordgame'))
+uri = os.environ.get('DATABASE_URL', 'postgresql:///wordgame')
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mochi')
